@@ -1,10 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <math.h>
-#include <string.h>
-
-#include "../types.c"
+#include "../headers/parser.h"
 
 struct token* t; // current token
 
@@ -25,14 +19,14 @@ struct expression* parseExpression(char *inp, int length)
 
     if (opIndex == 0)
     {
-        e->exp2 = atoi(&(inp[opIndex]));
+        e->exp2 = &(inp[opIndex]);
         e->op = '\0';
 
         return e;
     }
     else
     {
-        e->exp2 = atoi(&(inp[opIndex + 1]));
+        e->exp2 = &(inp[opIndex + 1]);
         e->op = inp[opIndex];
         struct expression* e2 = parseExpression(inp, opIndex);
         e->exp1 = e2;
@@ -135,7 +129,7 @@ struct statement* parse(struct token *tokens, int numStatements)
     // parse a program
     while (currStatement < numStatements)
     {
-        s[currStatement] = *parseStatement(t);
+        s[currStatement] = *parseStatement();
         currStatement++;
     }
 

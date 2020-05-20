@@ -1,11 +1,11 @@
-#ifndef PLACEHOLDER
+#ifndef types_h
 
-#define PLACEHOLDER 0
+#define types_h
 
 struct expression
 {
     struct expression *exp1;
-    int exp2;
+    char* exp2;
     char op;
 };
 
@@ -13,7 +13,7 @@ union argument {
     char *str;
     int num;
     struct expression *exp;
-    struct statement* sta;
+    struct statement *sta;
 };
 
 // pseudo-polymorphism hehe

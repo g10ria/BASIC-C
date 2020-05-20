@@ -1,22 +1,15 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-
-#define NUM_INITIAL_LINES 512   // todo: dynamic sizing?
-
-#include "./parser/parser.c"
-#include "./scanner/scanner.c"
-#include "./parser/evals.c"
+#include "./headers/interpreter.h"
 
 char** lines;       // array of the lines
 int numLines = 0;
 int* next;          // stores the next line of every line
-int firstLine = NUM_INITIAL_LINES;
+int firstLine = MAX_LINES;
 
 void initialize() {
-    next = malloc(NUM_INITIAL_LINES * sizeof(int));
-    for (int i = 0; i < NUM_INITIAL_LINES; i++) next[i] = -1;
-    lines = malloc(NUM_INITIAL_LINES * sizeof(char *));
+    next = malloc(MAX_LINES * sizeof(int));
+    for (int i = 0; i < MAX_LINES; i++)
+        next[i] = -1;
+    lines = malloc(MAX_LINES * sizeof(char *));
 }
 
 void addLine(int line, char* input)
@@ -48,8 +41,8 @@ void addLine(int line, char* input)
 int main() {
     initialize();
 
-    char* input = "10 PRINT 3";
-    char* input2 = "20 REM hello";
+    char *input = "20 LET x = 3";
+    char* input2 = "30 PRINT 5";
 
     int line = atoi(input);
 
@@ -57,8 +50,6 @@ int main() {
 
     line = atoi(input2);
     addLine(line, input2);
-
-    // printf("%d %d", next[0], next[20]);
 
     struct token* tokens = scan(lines, numLines, firstLine, next);
     struct statement* statements = parse(tokens, numLines);

@@ -1,12 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <math.h>
-#include <string.h>
-
-#define AVG_TOKENS_PER_LINE 6 // arbitrary number, used for malloc
-
-#include "../types.c"
+#include "../headers/scanner.h"
 
 int equals(char* one, char* two) {
     int ind = 0;
