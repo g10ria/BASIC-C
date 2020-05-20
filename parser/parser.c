@@ -6,6 +6,8 @@
 
 #include "../types.c"
 
+struct token* t; // current token
+
 /**
  * Strictly evaluates arithmetic expression left to right (unfortunately)
  */ 
@@ -63,14 +65,11 @@ int evaluateExp(struct expression * e) {
     }    
 }
 
-void parseStatement(char* inp) {
+void parseStatement() {
     struct statement *s = malloc(sizeof(struct statement));
-    s->type = (char)inp[0];
+    s->type = (t->val)[0];
 
-    // strip out the command
-    int spaceInd = 0;
-    while(inp[spaceInd]!=' ') spaceInd++;
-    inp = inp + spaceInd + 1;
+    t++;
 
     union argument arg1;
     union argument arg2;
@@ -78,38 +77,30 @@ void parseStatement(char* inp) {
     switch (s->type)
     {
         case ('R'): // REM
-            arg1.str = inp;
+            arg1.str = t->val;
+            t++;
+
+            printf("%s\n", arg1.str);
             break;
-        case('L'):  // LET
-            ;
-            int spaceInd2 = 0;
-            while(inp[spaceInd2]!=' ') spaceInd2++;
 
-            // definitely test this lmaoo
-            arg1.str = malloc(spaceInd2 + 1); // size + 1
-            memcpy(arg1.str, inp, spaceInd2);
-            arg1.str[spaceInd2] = '\0';
+        case('L'):  // LET FIX THIS LOL
+            arg1.str = t->val;
+            t+=2; // skip the '='
+            arg2.str = t->val;
+            t++;
 
-            int spaceInd3 = 0;
-            while(inp[spaceInd3]!=' ') spaceInd3++;
-
-            arg2.str = inp + spaceInd3 + 1;
-
-            printf("%s\n", arg2.str);
+            printf("%s %s\n", arg1.str, arg2.str);
             break;
     }
 }
 
 void parse(struct token* tokens) {
-    int index = 0;
-    struct token* t = tokens;
+    t = tokens;
 
+    // parse a program
     while(t->type != 'e')
     {
-        printf("%c %s\n", t->type, t->val);
-
-        index++;
-        t = tokens + index;
+        parseStatement(t);       
     }
 }
 

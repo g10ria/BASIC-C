@@ -80,9 +80,6 @@ struct token *scan(char **lines, int numLines, int firstLine, int* next)
             }
         } // splitting up the line by spaces
         nextLine = next[nextLine];
-
-        tokens[numTokens] = *scanString("TERM"); // termination after every line
-        numTokens++;
     }
 
     // complete term

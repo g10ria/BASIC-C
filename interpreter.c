@@ -47,11 +47,15 @@ void addLine(int line, char* input)
 int main() {
     initialize();
 
-    char* input = "10 REM 3";
+    char* input = "10 LET x = 3";
+    char* input2 = "20 REM hello";
 
     int line = atoi(input);
 
     addLine(line, input);
+
+    line = atoi(input2);
+    addLine(line, input2);
 
     // printf("%d %d", next[0], next[20]);
 

@@ -32,7 +32,6 @@ struct token
      * v for varname
      * n for number
      * o for operand
-     * t for terminator
      * e for end (no more tokens)
      */
     char *val;
