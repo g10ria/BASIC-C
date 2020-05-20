@@ -14,8 +14,8 @@ struct token* t; // current token
 struct expression* parseExpression(char *inp, int length)
 {
     struct expression* e = malloc(sizeof(struct expression));
-
-    int opIndex = length-1;
+    
+    int opIndex = length - 1;
 
     // it is a digit
     while (isdigit(inp[opIndex])!=0 && opIndex>0)
@@ -27,6 +27,7 @@ struct expression* parseExpression(char *inp, int length)
     {
         e->exp2 = atoi(&(inp[opIndex]));
         e->op = '\0';
+
         return e;
     }
     else
@@ -40,32 +41,7 @@ struct expression* parseExpression(char *inp, int length)
     } 
 }
 
-int evaluateExp(struct expression * e) {
-
-    int exp2 = e->exp2;
-    if (e->op == '\0')
-        return exp2;
-    else
-    {
-        int exp1 = evaluateExp(e->exp1);
-
-        switch (e->op)
-        {
-        case ('+'):
-            return exp1 + exp2;
-        case ('*'):
-            return exp1 * exp2;
-        case ('-'):
-            return exp1 - exp2;
-        case ('/'):
-            return exp1 / exp2;
-        default:
-            printf("errorrrr");
-        }
-    }    
-}
-
-void parseStatement() {
+struct statement* parseStatement() {
     struct statement *s = malloc(sizeof(struct statement));
     s->type = (t->val)[0];
 
@@ -73,50 +49,95 @@ void parseStatement() {
 
     union argument arg1;
     union argument arg2;
+    union argument arg3;
+    union argument arg4;
 
+    // rem, let, print, nput, goto, if, end
     switch (s->type)
     {
         case ('R'): // REM
             arg1.str = t->val;
             t++;
-
-            printf("%s\n", arg1.str);
             break;
 
-        case('L'):  // LET FIX THIS LOL
+        case('L'):  // LET 
             arg1.str = t->val;
             t+=2; // skip the '='
+
+            int len = 0;
+            while (t->val[len] != '\0')
+                len++;
+            arg2.exp = parseExpression(t->val, len);
+            t++;
+            break;
+        
+        case('P'):  // PRINT
+            ;
+            int len2 = 0;
+            while (t->val[len2] != '\0')
+                len2++;
+            arg1.exp = parseExpression(t->val, len2);
+
+            t++;
+            break;
+
+        case('N'):  //  (I)NPUT
+            arg1.str = t->val;
+            t++;
+            break;
+        
+        case('G'):  // GOTO
+            arg1.num = atoi(t->val); // test if this works
+            t++;
+            break;
+
+        // ughhhhhhhh
+        case('I'):
+            ;
+            // THIS NEEDS TESTING
+
+            // todo: REFACTOR THIS
+            int len4 = 0;
+            while (t->val[len4] != '\0') len4++;
+            arg1.exp = parseExpression(t->val, len4);
+            t++;
             arg2.str = t->val;
             t++;
 
-            printf("%s %s\n", arg1.str, arg2.str);
+            int len5 = 0;
+            while (t->val[len5] != '\0')
+                len5++;
+            arg3.exp = parseExpression(t->val, len5);
+            t+=2; // skip the THEN
+            arg4.sta = parseStatement();
+
+            break;
+
+        case('E'):
             break;
     }
+
+    s->arg1 = arg1;
+    s->arg2 = arg2;
+    s->arg3 = arg3;
+    s->arg4 = arg4;
+
+    return s;
 }
 
-void parse(struct token* tokens) {
+struct statement* parse(struct token *tokens, int numStatements)
+{
     t = tokens;
 
+    struct statement *s = malloc(numStatements * sizeof(struct statement));
+    int currStatement = 0;
+
     // parse a program
-    while(t->type != 'e')
+    while (currStatement < numStatements)
     {
-        parseStatement(t);       
+        s[currStatement] = *parseStatement(t);
+        currStatement++;
     }
+
+    return s;
 }
-
-// int main() {
-//     // lil tester
-//     char* inp = "LET x = 3";
-
-//     parseStatement(inp);
-
-//     /**
-//      * rem, let, print, input, goto, if, end
-//      */
-
-//     // struct expression * e = parseExpression(inp, 8);
-
-//     // printf("%d", evaluateExp(e));
-//     return 0;
-// }
-

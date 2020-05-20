@@ -37,7 +37,6 @@ struct token* scanString(char* inp) {
                  equals(inp, "GOTO") |
                  equals(inp, "IF") |
                  equals(inp, "END") == 1) t->type = 'k'; // keyword
-        else if (equals(inp, "TERM")) t->type = 't';
         else t->type = 'v'; // variable
     }
     else t->type = 'n'; // number
@@ -81,11 +80,6 @@ struct token *scan(char **lines, int numLines, int firstLine, int* next)
         } // splitting up the line by spaces
         nextLine = next[nextLine];
     }
-
-    // complete term
-    struct token* endTok = malloc(sizeof(struct token));
-    endTok->type = 'e';
-    tokens[numTokens] = *endTok;
 
     return tokens;
 }

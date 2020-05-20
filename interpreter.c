@@ -6,6 +6,7 @@
 
 #include "./parser/parser.c"
 #include "./scanner/scanner.c"
+#include "./parser/evals.c"
 
 char** lines;       // array of the lines
 int numLines = 0;
@@ -47,7 +48,7 @@ void addLine(int line, char* input)
 int main() {
     initialize();
 
-    char* input = "10 LET x = 3";
+    char* input = "10 PRINT 3";
     char* input2 = "20 REM hello";
 
     int line = atoi(input);
@@ -60,7 +61,8 @@ int main() {
     // printf("%d %d", next[0], next[20]);
 
     struct token* tokens = scan(lines, numLines, firstLine, next);
-    parse(tokens);
+    struct statement* statements = parse(tokens, numLines);
+    eval(statements, numLines);
 
     free(lines);
     free(next);
