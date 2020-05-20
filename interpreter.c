@@ -4,7 +4,7 @@
 
 #define NUM_INITIAL_LINES 512   // todo: dynamic sizing?
 
-#include "./parser.c"
+#include "./parser/parser.c"
 #include "./scanner/scanner.c"
 
 char** lines;       // array of the lines
@@ -55,7 +55,8 @@ int main() {
 
     // printf("%d %d", next[0], next[20]);
 
-    scan(lines, numLines, firstLine, next);
+    struct token* tokens = scan(lines, numLines, firstLine, next);
+    parse(tokens);
 
     free(lines);
     free(next);

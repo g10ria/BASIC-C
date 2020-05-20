@@ -4,7 +4,7 @@
 #include <math.h>
 #include <string.h>
 
-#include "./ast/types.c"
+#include "../types.c"
 
 /**
  * Strictly evaluates arithmetic expression left to right (unfortunately)
@@ -97,6 +97,19 @@ void parseStatement(char* inp) {
 
             printf("%s\n", arg2.str);
             break;
+    }
+}
+
+void parse(struct token* tokens) {
+    int index = 0;
+    struct token* t = tokens;
+
+    while(t->type != 'e')
+    {
+        printf("%c %s\n", t->type, t->val);
+
+        index++;
+        t = tokens + index;
     }
 }
 

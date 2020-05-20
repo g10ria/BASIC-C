@@ -6,17 +6,7 @@
 
 #define AVG_TOKENS_PER_LINE 6 // arbitrary number, used for malloc
 
-struct token {
-    char type;
-    /**
-     * k for keyword
-     * v for varname
-     * n for number
-     * o for operand
-     * t for terminator
-     */ 
-    char* val;
-};
+#include "../types.c"
 
 int equals(char* one, char* two) {
     int ind = 0;
@@ -47,11 +37,12 @@ struct token* scanString(char* inp) {
                  equals(inp, "GOTO") |
                  equals(inp, "IF") |
                  equals(inp, "END") == 1) t->type = 'k'; // keyword
+        else if (equals(inp, "TERM")) t->type = 't';
         else t->type = 'v'; // variable
     }
     else t->type = 'n'; // number
 
-    printf("%c %s\n", t->type, t->val);
+    // printf("%c %s\n", t->type, t->val);
     return t;
 }
 
@@ -89,8 +80,15 @@ struct token *scan(char **lines, int numLines, int firstLine, int* next)
             }
         } // splitting up the line by spaces
         nextLine = next[nextLine];
+
+        tokens[numTokens] = *scanString("TERM"); // termination after every line
+        numTokens++;
     }
 
+    // complete term
+    struct token* endTok = malloc(sizeof(struct token));
+    endTok->type = 'e';
+    tokens[numTokens] = *endTok;
+
     return tokens;
-    
 }
