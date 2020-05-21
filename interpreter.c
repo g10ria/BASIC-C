@@ -7,6 +7,9 @@ int firstLine = -1;
 
 int* nextConverted;
 
+int fakeNext[1] = {-1};
+int fakeNextConverted[1] = {0};
+
 void initialize() {
     next = malloc(MAX_LINES * sizeof(int));
     nextConverted = malloc(MAX_LINES * sizeof(int));
@@ -101,8 +104,54 @@ int strLen(char * str) {
     return len+1;
 }
 
+void runImmediate(char* statement) {
+    // int* temp =
+    struct token *tokens = scan(&statement, 1, 0, fakeNext);
+    struct statement *statements = parse(tokens, 1);
+    // convertLinesToIndex();
+    eval(statements, 1, fakeNextConverted);
+}
+
+#include <regex.h>
+int match(const char *string, const char *pattern)
+{
+    regex_t re;
+    if (regcomp(&re, pattern, REG_EXTENDED | REG_NOSUB) != 0)
+        return 0;
+    int status = regexec(&re, string, 0, NULL, 0);
+    regfree(&re);
+    if (status != 0)
+        return 0;
+    return 1;
+}
+
+char * genImmediateRegex() {
+    char *regex = "^PRINT ([a-zA-Z][a-zA-Z0-9_]*|[0-9]+)( [+\\-/*] ([a-zA-Z][a-zA-Z0-9_]*|[0-9]+))*$";
+
+    // ([+\\-/*]([a-zA-Z][a-zA-Z0-9_]*|[0-9]+))*
+
+    return regex;
+}
+
+// 
+
+char * genRegex() {
+
+    // // matches 1 expression
+    // char *exp = "([a-zA-Z][a-zA-Z0-9_]*|[0-9]+)([+\\-/*]([a-zA-Z][a-zA-Z0-9_]*|[0-9]+))*";
+    // int expLen = 70;
+
+    // GET
+    char * regex = "\
+    ^GOTO [0-9]+$\
+    ";
+
+    return regex;
+}
+
 int main() {
     initialize();
+    char *immediateRegex = genImmediateRegex();
 
     printf("Welcome to your simplified BASIC interpreter.\n\n\
     \tMAX PROGRAM LENGTH: %d lines\n\
@@ -127,11 +176,18 @@ int main() {
             // todo: check against regex
 
             // make a copy of the string
-            int length = strLen(l);
-            char * l2 = malloc(length * sizeof(char));
-            for(int i=0;i<length;i++) l2[i] = l[i];
+            // int length = strLen(l);
+            // char * l2 = malloc(length * sizeof(char));
+            // for(int i=0;i<length;i++) l2[i] = l[i];
 
-            addLine(l2);
+            // addLine(l2);
+
+            printf("Immediate: %s\n", immediateRegex);
+
+            if (match(l, immediateRegex)) {
+                printf("matched\n");
+                runImmediate(l);
+            }
         }        
     }
 
