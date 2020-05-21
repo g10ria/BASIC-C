@@ -29,31 +29,52 @@ void addLine(int line, char* input)
      */
     int nextValue = next[line];
     int currNextValue = nextValue;
-    int currNextValueIndex = line;
-    while (currNextValue == next[line] && currNextValueIndex > 0)
+    int currNextValueIndex = line-1;
+    
+    while (currNextValue == next[line] && currNextValueIndex >= 0)
     {
+        next[currNextValueIndex] = line;
+
         currNextValueIndex--;
         currNextValue = next[currNextValueIndex];
-        next[currNextValueIndex] = line;
+    }
+}
+
+int* convertLinesToIndex() {
+    int current = 0;
+    int previousNext = next[0];
+    
+    for(int i=0;i<MAX_LINES;i++) {
+        
+        if (next[i] != previousNext) {
+            current++;
+            previousNext = next[i];
+        }
+        // printf("%d goes to %d\n", i, current);
+        next[i] = current;
+
+        if (i<MAX_LINES-1 && next[i+1]==-1) break;
     }
 }
 
 int main() {
     initialize();
 
-    char *input = "20 LET x = 3";
-    char* input2 = "30 PRINT 5";
+    char *input = "30 GOTO 50";
+    char* input2 = "40 PRINT 1";
+    char* input3 = "50 PRINT 2";
 
     int line = atoi(input);
-
     addLine(line, input);
-
     line = atoi(input2);
     addLine(line, input2);
+    line = atoi(input3);
+    addLine(line, input3);
 
     struct token* tokens = scan(lines, numLines, firstLine, next);
     struct statement* statements = parse(tokens, numLines);
-    eval(statements, numLines);
+    convertLinesToIndex();
+    eval(statements, numLines, next);
 
     free(lines);
     free(next);

@@ -1,12 +1,5 @@
 #include "../headers/evals.h"
 
-struct statement *s; // current statement
-
-// void evaluateREM() {}
-// void evaluateLET(statement) {
-
-// }
-
 int evaluateExp(struct expression *e)
 {
     if (e->op == '\0') {
@@ -38,6 +31,9 @@ int evaluateExp(struct expression *e)
     }
 }
 
+/**
+ * Helper function, converts a number to a string
+ */ 
 char * numToString(int num) {
     int places = 0;
     
@@ -56,25 +52,33 @@ char * numToString(int num) {
     return res;
 }
 
-void eval(struct statement* statements, int numStatements) {
+void eval(struct statement* statements, int numStatements, int* lineToIndex) {
     initializeHashmap();
 
-    s = statements;
+    struct statement *s = statements; // current statement
+
     for(int i=0;i<numStatements;i++) {
+
         switch(s->type) {
             case('R'):
                 break;
             case('L'):;
-                // arg1.str = varname
-                // arg2
                 int value = evaluateExp(s->arg2.exp);
                 put(s->arg1.str, numToString(3));
-                // set a variable (let's just ignore this for now lol)
                 break;
-            case('P'):
-                ;
+            case('P'):;
                 int result = evaluateExp(s->arg1.exp);
                 printf("%d\n", result);
+                break;
+            case('N'):;
+                // waits for input
+                break;
+            case('G'):;
+                int line = s->arg1.num;     // line 10
+                int index = lineToIndex[line-1];
+                printf("going to line %d and index %d\n", line, index);
+                i = index - 1;
+                s = statements + index - 1;
                 break;
         }
         s++;

@@ -10,11 +10,10 @@
 #include <string.h>
 #include "./types.h"
 
-// #include "./env.h"
-#include "../hashmap/headers/hashmapLite.h"
+#include "../cson/headers/hashmapLite.h"
 
 int evaluateExp(struct expression*);
 
-void eval(struct statement*, int);
+void eval(struct statement*, int, int*);
 
 #endif
