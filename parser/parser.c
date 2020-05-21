@@ -7,6 +7,8 @@ struct token* t; // current token
  */ 
 struct expression* parseExpression(char *inp, int length)
 {
+    // printf("parsing expression %s\n", inp);
+
     struct expression* e = malloc(sizeof(struct expression));
     
     int opIndex = length - 1;
@@ -39,6 +41,8 @@ struct statement* parseStatement() {
     struct statement *s = malloc(sizeof(struct statement));
     s->type = (t->val)[0];
 
+    // printf("parsing statement with first token %s\n", t->val);
+
     t++;
 
     union argument arg1;
@@ -67,6 +71,8 @@ struct statement* parseStatement() {
         
         case('P'):  // PRINT
             ;
+
+            // printf("parsing print\n");
             int len2 = 0;
             while (t->val[len2] != '\0')
                 len2++;
@@ -86,8 +92,7 @@ struct statement* parseStatement() {
             break;
 
         // ughhhhhhhh
-        case('I'):
-            ;
+        case('I'):;
             // THIS NEEDS TESTING
 
             // todo: REFACTOR THIS
@@ -102,7 +107,8 @@ struct statement* parseStatement() {
             while (t->val[len5] != '\0')
                 len5++;
             arg3.exp = parseExpression(t->val, len5);
-            t+=2; // skip the THEN
+            t++;
+
             arg4.sta = parseStatement();
 
             break;

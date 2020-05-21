@@ -53,34 +53,73 @@ char * numToString(int num) {
 }
 
 void eval(struct statement* statements, int numStatements, int* lineToIndex) {
+
+    // todo: refactor into actual methods lol
     initializeHashmap();
 
     struct statement *s = statements; // current statement
+    int pause = 0;
 
     for(int i=0;i<numStatements;i++) {
 
+        if (pause == 0) s = statements + i;
+        else pause = 0;
+
         switch(s->type) {
-            case('R'):
+
+            case('R'):  // REM
+                s++;
                 break;
-            case('L'):;
+
+            case('L'):; //LET
                 int value = evaluateExp(s->arg2.exp);
-                put(s->arg1.str, numToString(3));
+                put(s->arg1.str, numToString(value));
+                s++;
                 break;
-            case('P'):;
+
+            case('P'):; // PRINT
                 int result = evaluateExp(s->arg1.exp);
                 printf("%d\n", result);
+                s++;
                 break;
-            case('N'):;
-                // waits for input
+
+            case('N'):; // (I)NPUT
+                int answer = 0;
+                scanf("%d", &answer);
+                put(s->arg1.str, numToString(answer));
                 break;
-            case('G'):;
-                int line = s->arg1.num;     // line 10
+
+            case('G'):; // GOTO
+                int line = s->arg1.num;
                 int index = lineToIndex[line-1];
-                printf("going to line %d and index %d\n", line, index);
                 i = index - 1;
                 s = statements + index - 1;
                 break;
+
+            case('I'):;
+                int left = evaluateExp(s->arg1.exp);
+                int right = evaluateExp(s->arg3.exp);
+                char op = *(s->arg2.str);
+
+                int cond = 0;
+                switch(op) {
+                    case('='): cond = left == right; break;
+                    case('<'): cond = left < right; break;
+                    case('>'): cond = left > right; break;
+                    default: printf("erororororo");
+                }
+
+                if (cond) {
+                    s = s->arg4.sta;
+                    i--;
+                    pause = 1;
+                }
+
+                break;
+
+            case('E'):  // end
+                i = numStatements;
+
         }
-        s++;
     }
 }
