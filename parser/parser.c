@@ -40,8 +40,7 @@ struct expression* parseExpression(char *inp, int length)
 struct statement* parseStatement() {
     struct statement *s = malloc(sizeof(struct statement));
     s->type = (t->val)[0];
-
-    // printf("parsing statement with first token %s\n", t->val);
+    if (s->type=='I' && (t->val)[1] == 'N') s->type='N'; // INPUT (not IF)
 
     t++;
 
@@ -69,8 +68,7 @@ struct statement* parseStatement() {
             t++;
             break;
         
-        case('P'):  // PRINT
-            ;
+        case('P'):; // PRINT
 
             // printf("parsing print\n");
             int len2 = 0;
@@ -91,11 +89,8 @@ struct statement* parseStatement() {
             t++;
             break;
 
-        // ughhhhhhhh
-        case('I'):;
-            // THIS NEEDS TESTING
+        case('I'):; // IF
 
-            // todo: REFACTOR THIS
             int len4 = 0;
             while (t->val[len4] != '\0') len4++;
             arg1.exp = parseExpression(t->val, len4);

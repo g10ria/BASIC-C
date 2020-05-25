@@ -53,9 +53,7 @@ char * numToString(int num) {
 }
 
 void eval(struct statement* statements, int numStatements, int* lineToIndex) {
-
-    // todo: refactor into actual methods lol
-    initializeHashmap();
+    initializeHashmap();    // for storing variables
 
     struct statement *s = statements; // current statement
     int pause = 0;
@@ -65,27 +63,27 @@ void eval(struct statement* statements, int numStatements, int* lineToIndex) {
         if (pause == 0) s = statements + i;
         else pause = 0;
 
+        // printf("executing statement with index %d and type %c\n", i, s->type);
+
         switch(s->type) {
 
             case('R'):  // REM
-                s++;
                 break;
 
             case('L'):; //LET
                 int value = evaluateExp(s->arg2.exp);
                 put(s->arg1.str, numToString(value));
-                s++;
                 break;
 
             case('P'):; // PRINT
                 int result = evaluateExp(s->arg1.exp);
                 printf("%d\n", result);
-                s++;
                 break;
 
             case('N'):; // (I)NPUT
-                int answer = 0;
-                scanf("%d", &answer);
+                char inp[1024]; // arbitrary value
+                scanf("%[^\n]%*c", inp);
+                int answer = atoi(inp);
                 put(s->arg1.str, numToString(answer));
                 break;
 
@@ -119,6 +117,7 @@ void eval(struct statement* statements, int numStatements, int* lineToIndex) {
 
             case('E'):  // end
                 i = numStatements;
+                break;
 
         }
     }
