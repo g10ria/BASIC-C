@@ -1,23 +1,24 @@
 #include "../headers/parser.h"
 
-struct token* t; // current token
+struct token *t; // current token
 
 /**
- * Strictly evaluates arithmetic expression left to right (unfortunately)
- */ 
-struct expression* parseExpression(char *inp, int length)
+ * Parses an arithmetic expression according to this grammar:
+ * expr -> expr next
+ * next -> + num | - num
+ * num is just a number
+ */
+struct expression *parseExpression(char *inp, int length)
 {
     // printf("parsing expression %s\n", inp);
 
-    struct expression* e = malloc(sizeof(struct expression));
-    
+    struct expression *e = malloc(sizeof(struct expression));
+
     int opIndex = length - 1;
 
     // it is a digit
-    while (isdigit(inp[opIndex])!=0 && opIndex>0)
-    {
+    while (isdigit(inp[opIndex]) != 0 && opIndex > 0)
         opIndex--;
-    }
 
     if (opIndex == 0)
     {
@@ -30,17 +31,25 @@ struct expression* parseExpression(char *inp, int length)
     {
         e->exp2 = &(inp[opIndex + 1]);
         e->op = inp[opIndex];
-        struct expression* e2 = parseExpression(inp, opIndex);
+        struct expression *e2 = parseExpression(inp, opIndex);
         e->exp1 = e2;
-        
+
         return e;
-    } 
+    }
 }
 
-struct statement* parseStatement() {
+/**
+ * Parses a statement according to its type
+ * (Deduces type from the first 1-2 characters in the line of code)
+ * 
+ * @return a pointer to the parsed statement
+ */
+struct statement *parseStatement()
+{
     struct statement *s = malloc(sizeof(struct statement));
     s->type = (t->val)[0];
-    if (s->type=='I' && (t->val)[1] == 'N') s->type='N'; // INPUT (not IF)
+    if (s->type == 'I' && (t->val)[1] == 'N')
+        s->type = 'N'; // INPUT (not IF)
 
     t++;
 
@@ -52,64 +61,64 @@ struct statement* parseStatement() {
     // rem, let, print, nput, goto, if, end
     switch (s->type)
     {
-        case ('R'): // REM
-            arg1.str = t->val;
-            t++;
-            break;
+    case ('R'): // REM
+        arg1.str = t->val;
+        t++;
+        break;
 
-        case('L'):  // LET 
-            arg1.str = t->val;
-            t+=2; // skip the '='
+    case ('L'): // LET
+        arg1.str = t->val;
+        t += 2; // skip the '='
 
-            int len = 0;
-            while (t->val[len] != '\0')
-                len++;
-            arg2.exp = parseExpression(t->val, len);
-            t++;
-            break;
-        
-        case('P'):; // PRINT
+        int len = 0;
+        while (t->val[len] != '\0')
+            len++;
+        arg2.exp = parseExpression(t->val, len);
+        t++;
+        break;
 
-            // printf("parsing print\n");
-            int len2 = 0;
-            while (t->val[len2] != '\0')
-                len2++;
-            arg1.exp = parseExpression(t->val, len2);
+    case ('P'):; // PRINT
 
-            t++;
-            break;
+        int len2 = 0;
+        while (t->val[len2] != '\0')
+            len2++;
+        arg1.exp = parseExpression(t->val, len2);
 
-        case('N'):  //  (I)NPUT
-            arg1.str = t->val;
-            t++;
-            break;
-        
-        case('G'):  // GOTO
-            arg1.num = atoi(t->val); // test if this works
-            t++;
-            break;
+        t++;
+        break;
 
-        case('I'):; // IF
+    case ('N'): //  (I)NPUT
+        arg1.str = t->val;
+        t++;
+        break;
 
-            int len4 = 0;
-            while (t->val[len4] != '\0') len4++;
-            arg1.exp = parseExpression(t->val, len4);
-            t++;
-            arg2.str = t->val;
-            t++;
+    case ('G'):                  // GOTO
+        arg1.num = atoi(t->val); // test if this works
+        t++;
+        break;
 
-            int len5 = 0;
-            while (t->val[len5] != '\0')
-                len5++;
-            arg3.exp = parseExpression(t->val, len5);
-            t++;
+    case ('I'):; // IF
 
-            arg4.sta = parseStatement();
+        int len4 = 0;
+        while (t->val[len4] != '\0')
+            len4++;
+        arg1.exp = parseExpression(t->val, len4);
+        t++;
+        arg2.str = t->val;
+        t++;
 
-            break;
+        int len5 = 0;
+        while (t->val[len5] != '\0')
+            len5++;
+        arg3.exp = parseExpression(t->val, len5);
+        t++;
 
-        case('E'):
-            break;
+        arg4.sta = parseStatement();
+
+        break;
+
+    case ('E'):
+        break;
     }
 
     s->arg1 = arg1;
@@ -120,7 +129,15 @@ struct statement* parseStatement() {
     return s;
 }
 
-struct statement* parse(struct token *tokens, int numStatements)
+/**
+ * Parses a program given its array of tokens
+ * 
+ * @param tokens the array of tokens
+ * @param numStatements the total # of statements (lines of code)
+ * 
+ * @return an array of statements
+ */
+struct statement *parse(struct token *tokens, int numStatements)
 {
     t = tokens;
 

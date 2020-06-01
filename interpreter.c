@@ -1,26 +1,33 @@
 #include "./headers/interpreter.h"
 
-char **lines; // array of the lines
-int numLines = 0;
-int *next; // stores the next line of every line
-int firstLine = -1;
+char **lines;       // array of the lines
+int numLines = 0;   // number of lines in the program
+int *next;          // stores the next line of every line
+int firstLine = -1; // line number of the first line
 
-int *nextConverted;
+int *nextConverted; // "next" indices converted to line indices (see convert function)
 
-int fakeNext[1] = {-1};
-int fakeNextConverted[1] = {0};
-
+/**
+ * Allocates needed space and initializes the necessary values for the program
+ */
 void initialize()
 {
     next = malloc(MAX_LINES * sizeof(int));
     nextConverted = malloc(MAX_LINES * sizeof(int));
     for (int i = 0; i < MAX_LINES; i++)
         next[i] = -1;
+
     lines = malloc(MAX_LINES * sizeof(char *));
-    for(int i=0;i < MAX_LINES; i++)
+    for (int i = 0; i < MAX_LINES; i++)
         lines[i] = "";
 }
 
+/**
+ * Adds a new line to the program
+ * Strips the line number from the string before adding it
+ * 
+ * @param input the line as a string
+ */
 void addLine(char *input)
 {
     int line = atoi(input);
@@ -33,7 +40,7 @@ void addLine(char *input)
     if (firstLine == -1 || line < firstLine)
         firstLine = line;
 
-    if (lines[line][0]=='\0')
+    if (lines[line][0] == '\0')
         numLines++;
 
     lines[line] = input;
@@ -53,9 +60,19 @@ void addLine(char *input)
         currNextValueIndex--;
         currNextValue = next[currNextValueIndex];
     }
+
+    return;
 }
 
-int *convertLinesToIndex()
+/**
+ * Converts the "next" array to an "index" array
+ * For example, if there are two lines 10 and 20 in the program,
+ * the "next" array will have indices 0-9 equal to 10 and indices
+ * 10-19 equal to 20. This will just convert indices 0-9 to 0 and
+ * indices 10-19 to 1, etc. It's used for the GOTO function.
+ * (New values are stored in a new array, the "next" array is untouched)
+ */
+void convertLinesToIndex()
 {
     int current = 0;
     int previousNext = next[0];
@@ -74,17 +91,26 @@ int *convertLinesToIndex()
         if (i < MAX_LINES - 1 && next[i + 1] == -1)
             break;
     }
+
+    return;
 }
 
+/**
+ * Actually runs the program for the "RUN" command
+ */
 void runProgram()
 {
-    // printf("Running program again\n");
     struct token *tokens = scan(lines, numLines, firstLine, next);
     struct statement *statements = parse(tokens, numLines);
     convertLinesToIndex();
     eval(statements, numLines, nextConverted);
+
+    return;
 }
 
+/**
+ * Lists each line of the program for the "LIST" command
+ */
 void listProgram()
 {
     int nextLine = firstLine;
@@ -94,27 +120,53 @@ void listProgram()
         printf("%d %s\n", nextLine, lines[nextLine]);
         nextLine = next[nextLine];
     }
+
+    return;
 }
 
+/**
+ *  Clears the program and removes all lines for the "CLEAR" command
+ */
 void clearProgram()
 {
     for (int i = 0; i < MAX_LINES; i++)
     {
         next[i] = -1;
-        lines[i] = NULL; // test
+        lines[i] = "";
     }
     numLines = 0;
+    firstLine = -1;
+
+    return;
 }
 
+/**
+ * Prints a help message for the "HELP" command
+ */
 void printHelp()
 {
+    // todo: write this
+    return;
 }
 
+/**
+ * For the "QUIT" command
+ */
 void quit()
 {
+    free(lines);
+    free(next);
+    free(nextConverted);
+
     exit(0);
 }
 
+/**
+ * Helper function to retrieve the length of a string
+ * 
+ * @param str the input string
+ * @return the length of the string
+ */
 int strLen(char *str)
 {
     int len = 0;
@@ -123,15 +175,10 @@ int strLen(char *str)
     return len + 1;
 }
 
-void runImmediate(char *statement)
-{
-    // int* temp =
-    struct token *tokens = scan(&statement, 1, 0, fakeNext);
-    struct statement *statements = parse(tokens, 1);
-    // convertLinesToIndex();
-    eval(statements, 1, fakeNextConverted);
-}
-
+/**
+ * Main method to run the interpreter
+ * Lacking in error handling :P
+ */ 
 int main()
 {
     initialize();
@@ -148,10 +195,8 @@ int main()
     {
         scanf("%[^\n]%*c", l);
 
-        // printf("Input was %s\n", l);
-
-        if (*l == '\0') continue; // skip empty lines
-            
+        if (*l == '\0')
+            continue; // skip empty lines
 
         if (strcmp(l, "RUN") == 0)
             runProgram();
@@ -167,12 +212,12 @@ int main()
         {
             // make a copy of the string
             int length = strLen(l);
-            char * l2 = malloc(length * sizeof(char));
-            for(int i=0;i<length;i++) l2[i] = l[i];
+            char *l2 = malloc(length * sizeof(char));
+            for (int i = 0; i < length; i++)
+                l2[i] = l[i];
 
             addLine(l2);
         }
-        
     }
 
     free(lines);
