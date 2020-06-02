@@ -62,8 +62,9 @@ struct statement *parseStatement()
     switch (s->type)
     {
     case ('R'): // REM
-        arg1.str = t->val;
-        t++;
+        while(t->type=='v' || t->type=='n')
+            t++;
+        arg1.str = "";
         break;
 
     case ('L'): // LET

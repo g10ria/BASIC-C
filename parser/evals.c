@@ -6,11 +6,11 @@
  * @param e the expression
  * @return the value of the expression
  */
-int evaluateExp(struct expression *e)
+int evaluateExp(struct expression *e, struct entry* map)
 {
-    if (e->op == '\0')
+    if (e->op == '\0') // no operand, it's just a raw value
     {
-        char *var = get(e->exp2);
+        char *var = get(e->exp2, map);
 
         // raw value, not a variable
         if (var == NULL)
@@ -21,7 +21,7 @@ int evaluateExp(struct expression *e)
     else
     {
         int exp2 = atoi(e->exp2);
-        int exp1 = evaluateExp(e->exp1);
+        int exp1 = evaluateExp(e->exp1, map);
 
         switch (e->op)
         {
@@ -35,6 +35,7 @@ int evaluateExp(struct expression *e)
             return exp1 / exp2;
         default:
             printf("errorrrr");
+            exit(1);
         }
     }
 }
@@ -75,7 +76,8 @@ char *numToString(int num)
  */
 void eval(struct statement *statements, int numStatements, int *lineToIndex)
 {
-    initializeHashmap(); // for storing variables
+    char initialValue = '\0';
+    struct entry* map = initializeHashmap(&initialValue); // for storing variables
 
     struct statement *s = statements; // current statement
     int pause = 0;
@@ -95,12 +97,12 @@ void eval(struct statement *statements, int numStatements, int *lineToIndex)
             break;
 
         case ('L'):; //LET
-            int value = evaluateExp(s->arg2.exp);
-            put(s->arg1.str, numToString(value));
+            int value = evaluateExp(s->arg2.exp, map);
+            put(s->arg1.str, numToString(value), map);
             break;
 
         case ('P'):; // PRINT
-            int result = evaluateExp(s->arg1.exp);
+            int result = evaluateExp(s->arg1.exp, map);
             printf("%d\n", result);
             break;
 
@@ -108,7 +110,7 @@ void eval(struct statement *statements, int numStatements, int *lineToIndex)
             char inp[1024]; // arbitrary value
             scanf("%[^\n]%*c", inp);
             int answer = atoi(inp);
-            put(s->arg1.str, numToString(answer));
+            put(s->arg1.str, numToString(answer), map);
             break;
 
         case ('G'):; // GOTO
@@ -119,8 +121,8 @@ void eval(struct statement *statements, int numStatements, int *lineToIndex)
             break;
 
         case ('I'):;
-            int left = evaluateExp(s->arg1.exp);
-            int right = evaluateExp(s->arg3.exp);
+            int left = evaluateExp(s->arg1.exp, map);
+            int right = evaluateExp(s->arg3.exp, map);
             char op = *(s->arg2.str);
 
             int cond = 0;
@@ -153,4 +155,6 @@ void eval(struct statement *statements, int numStatements, int *lineToIndex)
             break;
         }
     }
+
+    free(map);
 }

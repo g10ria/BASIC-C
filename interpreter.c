@@ -145,7 +145,46 @@ void clearProgram()
  */
 void printHelp()
 {
-    // todo: write this
+    printf("AVAILABLE COMMANDS:\n\n");
+    printf("\tImmediate:\n\n");
+
+    printf("\tHELP\n");
+    printf("\t\tPrints this help message.\n");
+    printf("\tRUN\n");
+    printf("\t\tRuns the current program.\n");
+    printf("\tLIST\n");
+    printf("\t\tLists the current lines in the program.\n");
+    printf("\tCLEAR\n");
+    printf("\t\tClears all lines in the current program.\n");
+    printf("\tQUIT\n");
+    printf("\t\tQuits the interpreter.\n");
+
+    printf("\n\n");
+
+    printf("\tBASIC:\n\n");
+    printf("\t<LINE> LET <VARIABLE> = <VALUE>\n");
+    printf("\t\tExample: 10 LET X = 10\n");
+
+    printf("\t<LINE> PRINT <VARIABLE>\n");
+    printf("\t\tExample: 15 PRINT X\n");
+
+    printf("\t<LINE> IF <CONDITION> <COMMAND>\n");
+    printf("\t\tExample: 20 IF X = 10 PRINT X\n");
+
+    printf("\t<LINE> REM <COMMENT>\n");
+    printf("\t\tExample: 35 REM THIS IS A COMMENT\n");
+
+    printf("\t<LINE> INPUT <VARIABLE>\n");
+    printf("\t\tExample: 40 INPUT X\n");
+
+    printf("\t<LINE> GOTO <LINE>\n");
+    printf("\t\tExample: 45 GOTO 55\n");
+
+    printf("\t END\n");
+    printf("\t\tExample: 55 END\n");
+
+    printf("\n\n");
+
     return;
 }
 

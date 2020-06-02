@@ -12,7 +12,7 @@
 
 #include "../cson/headers/hashmapLite.h"
 
-int evaluateExp(struct expression*);
+int evaluateExp(struct expression*, struct entry* map);
 
 void eval(struct statement*, int, int*);
 
